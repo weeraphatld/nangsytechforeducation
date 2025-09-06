@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เว็บสร้างใบงานคูณเลข</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f0f9ff; /* สีฟ้าอ่อน */
+        }
+
+        /* ซ่อนลูกศรในช่อง input number */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .problem-box {
+            background-color: white;
+            border: 2px solid #fdba74; /* สีส้มอ่อน */
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 1rem;
+            width: calc(50% - 2rem); /* คำนวณความกว้างสำหรับ 2 คอลัมน์ */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .dot-array {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem auto;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: #f97316; /* สีส้มสด */
+            border-radius: 50%;
+        }
+        
+        .equation-box {
+            border: 2px dashed #fca5a5; /* สีแดงอ่อน */
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            background-color: #fef2f2; /* สีชมพูอ่อน */
+            color: #b91c1c; /* สีแดงเข้ม */
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-box {
+            display: inline-block;
+            width: 3rem;
+            height: 3rem;
+            border: 2px solid #cbd5e1; /* gray-300 */
+            border-radius: 0.5rem;
+            margin: 0 0.25rem;
+            vertical-align: middle;
+        }
+
+        /* CSS สำหรับการพิมพ์ */
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+
+            #controls-container, #printBtn {
+                display: none !important;
+            }
+
+            #worksheet {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .problem-box {
+                width: 47%; /* กำหนดขนาดให้พอดี 2 กล่องต่อแถวบน A4 */
+                height: 46vh; /* กำหนดความสูงให้พอดี 2 แถวบน A4 */
+                margin: 1%;
+                padding: 1rem;
+                border: 2px solid #6b7280;
+                box-shadow: none;
+                page-break-inside: avoid; /* ป้องกันการตัดกล่องข้ามหน้า */
+            }
+            
+            /* บังคับขึ้นหน้าใหม่ทุกๆ 4 ข้อ */
+            .problem-box:nth-child(4n) {
+                page-break-after: always;
+            }
+
+            .dot {
+                width: 1rem;
+                height: 1rem;
+                background-color: #4b5563 !important; /* เปลี่ยนเป็นสีเทาเข้มเพื่อให้พิมพ์ชัด */
+            }
+            
+            .equation-box {
+                 border: 2px dashed #9ca3af;
+                 background-color: #f3f4f6;
+                 color: #1f2937;
+            }
+            
+            .input-box {
+                 border: 2px solid #4b5563;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- ส่วนควบคุม -->
+        <div id="controls-container" class="bg-white p-6 rounded-3xl shadow-lg mb-8 border-2 border-blue-200">
+            <div class="flex items-center justify-center mb-4">
+                 <img src="https://placehold.co/60x60/38bdf8/ffffff?text=🎨" class="rounded-full mr-4" onerror="this.onerror=null;this.src='https://placehold.co/60x60/38bdf8/ffffff?text=Error';">
+                 <h1 class="text-2xl md:text-4xl font-bold text-blue-600">สร้างใบงานคูณเลขมหาสนุก กับพี่หนังสือ</h1>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- ตั้งค่าจำนวนข้อ -->
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                    <label for="numProblems" class="block text-lg font-medium text-blue-800 mb-2">1. จำนวนข้อ</label>
+                    <input type="number" id="numProblems" value="4" min="1" class="w-full p-3 text-center text-xl font-bold text-blue-900 bg-white border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <!-- ตั้งค่าตัวเลข -->
+                <div class="bg-green-50 p-4 rounded-xl border border-green-200 md:col-span-2">
+                    <p class="block text-lg font-medium text-green-800 mb-2">2. กำหนดช่วงของตัวเลข</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <label for="num1Min" class="text-sm text-green-700">ตัวตั้ง (จาก)</label>
+                            <input type="number" id="num1Min" value="2" min="1" max="12" class="w-full p-3 text-center text-xl font-bold text-green-900 bg-white border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        </div>
+                        <span class="mt-6 font-bold text-green-700">-</span>
+                        <div class="flex-1">
+                             <label for="num1Max" class="text-sm text-green-700">(ถึง)</label>
+                            <input type="number" id="num1Max" value="5" min="1" max="12" class="w-full p-3 text-center text-xl font-bold text-green-900 bg-white border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        </div>
+                         <div class="flex-1">
+                            <label for="num2Min" class="text-sm text-green-700">ตัวคูณ (จาก)</label>
+                            <input type="number" id="num2Min" value="1" min="1" max="12" class="w-full p-3 text-center text-xl font-bold text-green-900 bg-white border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        </div>
+                        <span class="mt-6 font-bold text-green-700">-</span>
+                        <div class="flex-1">
+                             <label for="num2Max" class="text-sm text-green-700">(ถึง)</label>
+                            <input type="number" id="num2Max" value="12" min="1" max="12" class="w-full p-3 text-center text-xl font-bold text-green-900 bg-white border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ปุ่มสร้างและพิมพ์ -->
+            <div class="mt-6 flex flex-col md:flex-row justify-center items-center gap-4">
+                <button id="generateBtn" class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-200">
+                    สร้างใบงาน
+                </button>
+                 <button id="printBtn" class="w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-200">
+                    🖨️ พิมพ์ใบงาน
+                </button>
+            </div>
+        </div>
+
+        <!-- พื้นที่แสดงใบงาน -->
+        <div id="worksheet" class="flex flex-wrap justify-center">
+            <!-- กล่องโจทย์จะถูกสร้างที่นี่ -->
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const generateBtn = document.getElementById('generateBtn');
+        const printBtn = document.getElementById('printBtn');
+        const worksheetContainer = document.getElementById('worksheet');
+        
+        const numProblemsInput = document.getElementById('numProblems');
+        const num1MinInput = document.getElementById('num1Min');
+        const num1MaxInput = document.getElementById('num1Max');
+        const num2MinInput = document.getElementById('num2Min');
+        const num2MaxInput = document.getElementById('num2Max');
+
+        // --- Functions ---
+
+        /**
+         * สุ่มตัวเลขจำนวนเต็มในช่วงที่กำหนด (รวม min และ max)
+         * @param {number} min - ค่าต่ำสุด
+         * @param {number} max - ค่าสูงสุด
+         * @returns {number} - ตัวเลขที่สุ่มได้
+         */
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        /**
+         * สร้าง HTML สำหรับแสดงจุดแบบ Array
+         * @param {number} rows - จำนวนแถว
+         * @param {number} cols - จำนวนคอลัมน์
+         * @returns {string} - HTML string ของ dot array
+         */
+        function createDotArray(rows, cols) {
+            let dotsHtml = '';
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    dotsHtml += '<div class="dot"></div>';
+                }
+            }
+            // ใช้ CSS Grid ในการจัดเรียง
+            return `<div class="dot-array" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr);">${dotsHtml}</div>`;
+        }
+
+        /**
+         * สร้างใบงานทั้งหมด
+         */
+        function generateWorksheet() {
+            // ล้างใบงานเก่า
+            worksheetContainer.innerHTML = '';
+            
+            // อ่านค่าจากการตั้งค่า
+            const numProblems = parseInt(numProblemsInput.value);
+            const num1Min = parseInt(num1MinInput.value);
+            const num1Max = parseInt(num1MaxInput.value);
+            const num2Min = parseInt(num2MinInput.value);
+            const num2Max = parseInt(num2MaxInput.value);
+
+            // ตรวจสอบค่า Min/Max ให้ถูกต้อง
+            if (num1Min > num1Max || num2Min > num2Max) {
+                alert('ค่า "จาก" ต้องไม่มากกว่าค่า "ถึง"');
+                return;
+            }
+            
+            // --- ตรวจสอบและป้องกันโจทย์ซ้ำ ---
+            const generatedProblems = new Set();
+            
+            // คำนวณหาจำนวนโจทย์ที่ไม่ซ้ำกันสูงสุดที่เป็นไปได้
+            const allPossibleProblems = new Set();
+            for (let n1 = num1Min; n1 <= num1Max; n1++) {
+                for (let n2 = num2Min; n2 <= num2Max; n2++) {
+                    const sortedPair = [n1, n2].sort((a, b) => a - b);
+                    allPossibleProblems.add(`${sortedPair[0]}-${sortedPair[1]}`);
+                }
+            }
+            const maxUniqueProblems = allPossibleProblems.size;
+
+            if (numProblems > maxUniqueProblems) {
+                alert(`ไม่สามารถสร้างโจทย์ที่ไม่ซ้ำกันได้ ${numProblems} ข้อ จากช่วงตัวเลขที่กำหนด (สร้างได้สูงสุด ${maxUniqueProblems} ข้อ)`);
+                numProblemsInput.value = maxUniqueProblems; // ปรับค่าในช่อง input ให้เป็นค่าสูงสุด
+                return;
+            }
+
+            let problemCount = 0;
+            let attempts = 0; // ตัวป้องกัน loop ค้าง
+            while (problemCount < numProblems && attempts < 1000) {
+                const num1 = getRandomInt(num1Min, num1Max);
+                const num2 = getRandomInt(num2Min, num2Max);
+                
+                // จัดเรียงตัวเลขเพื่อทำให้ 2x3 และ 3x2 เป็นโจทย์เดียวกัน
+                const sortedPair = [num1, num2].sort((a, b) => a - b);
+                const problemKey = `${sortedPair[0]}-${sortedPair[1]}`;
+
+                // ถ้าโจทย์ซ้ำ ให้ข้ามไป
+                if (generatedProblems.has(problemKey)) {
+                    attempts++;
+                    continue;
+                }
+                
+                // เพิ่มโจทย์ใหม่เข้าไปใน Set และสร้าง HTML
+                generatedProblems.add(problemKey);
+                problemCount++;
+
+                const problemBox = document.createElement('div');
+                problemBox.className = 'problem-box';
+
+                // สร้าง HTML สำหรับสมการ (แบบมีช่องว่าง)
+                const equationHtml = `<span class="input-box"></span> &times; <span class="input-box"></span> = <span class="input-box"></span>`;
+
+                // สร้างสมการสลับที่ (ถ้าตัวเลขไม่เท่ากัน)
+                let commutativeEquation = '';
+                if (num1 !== num2) {
+                    commutativeEquation = `
+                        <div class="text-center text-lg text-gray-500 my-2">หรือ</div>
+                        <div class="equation-box text-center text-2xl">
+                            ${equationHtml}
+                        </div>`;
+                }
+
+                problemBox.innerHTML = `
+                    <div class="absolute top-4 left-4 w-10 h-10 bg-blue-500 text-white flex items-center justify-center rounded-full text-xl font-bold">${problemCount}</div>
+                    
+                    <div class="flex-grow flex items-center justify-center">
+                        ${createDotArray(num1, num2)}
+                    </div>
+
+                    <div class="mt-auto">
+                        <div class="equation-box text-center text-2xl">
+                           ${equationHtml}
+                        </div>
+                        ${commutativeEquation}
+                    </div>
+                `;
+                
+                worksheetContainer.appendChild(problemBox);
+                attempts = 0; // รีเซ็ตตัวนับเมื่อสร้างโจทย์สำเร็จ
+            }
+        }
+
+        // --- Event Listeners ---
+        generateBtn.addEventListener('click', generateWorksheet);
+        printBtn.addEventListener('click', () => {
+            // ตรวจสอบว่ามีใบงานให้พิมพ์หรือไม่
+            if (worksheetContainer.children.length === 0) {
+                alert('กรุณาสร้างใบงานก่อนพิมพ์');
+                return;
+            }
+            window.print();
+        });
+        
+        // สร้างใบงานเริ่มต้นเมื่อโหลดหน้าเว็บ
+        window.onload = generateWorksheet;
+
+    </script>
+</body>
+</html>
