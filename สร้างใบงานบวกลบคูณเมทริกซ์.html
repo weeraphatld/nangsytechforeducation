@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Master - สร้างใบงานเมทริกซ์</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX Rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* --- General & UI Styling --- */
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #F5A623;
+            --background-color: #f4f7f6;
+            --text-color: #333;
+            --page-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --border-color: #aaa;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+    .subtitle {
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        /* --- Control Panel --- */
+        .controls {
+            width: 320px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--page-shadow);
+            align-self: flex-start;
+        }
+
+        .control-group { margin-bottom: 20px; }
+        .control-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .control-group input[type="number"],
+        .control-group select { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; }
+        .dimension-inputs, .range-inputs { display: flex; gap: 10px; align-items: center; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 5px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        #generate-btn { background-color: var(--primary-color); margin-bottom: 10px; }
+        #generate-btn:hover { background-color: #357ABD; }
+        #print-btn { background-color: var(--secondary-color); display: none; }
+        #print-btn:hover { background-color: #D98E1A; }
+
+
+        /* --- Preview Area --- */
+        #preview-container {
+            flex-grow: 1;
+            height: 80vh;
+            overflow-y: auto;
+            background-color: #e0e4e2;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        /* --- Page Layout (A4 Simulation) --- */
+        .page {
+            background: white;
+            width: 21cm;
+            height: 29.7cm;
+            /* UPDATED: ขยับซ้าย (บน ขวา ล่าง ซ้าย) */
+            padding: 1.5cm 2.5cm 1cm 0.75cm;
+            margin: 0 auto 20px auto;
+            box-shadow: var(--page-shadow);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            /* UPDATED: ทำให้เป็นจุดอ้างอิงของ footer */
+            position: relative;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 0;
+            font-size: 1.1em;
+            flex-shrink: 0;
+        }
+        .header-field {
+            border-bottom: 1px dotted var(--text-color);
+            display: inline-block;
+            min-width: 300px;
+        }
+        
+        .page-content {
+            flex-grow: 1; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 45px 10px;
+        }
+        
+        .problem-container {
+            padding: 15px;
+            font-size: 1.2em;
+        }
+
+        .problem-statement {
+             display: flex;
+             align-items: flex-start;
+             gap: 10px;
+        }
+
+        .equation-wrapper {
+            min-width: 0;
+            flex-grow: 1;
+        }
+
+
+        /* --- Answer Key Page (No Change) --- */
+        .answer-key-page .page-header { text-align: center; font-size: 1.5em; font-weight: bold; }
+        .answer-key-content { columns: 2; column-gap: 40px; }
+        .answer-item { font-size: 1.1em; margin-bottom: 15px; break-inside: avoid; }
+        
+        /* --- Print Specific CSS --- */
+        @media print {
+            @page { size: A4; margin: 0; }
+            body { padding: 0; background-color: white; }
+            .controls, #print-btn, h1, .subtitle { display: none !important; }
+            #preview-container { width: 100%; height: auto; overflow: visible; background-color: transparent; padding: 0; border: none; }
+            .page { margin: 0; box-shadow: none; border: none; page-break-after: always; height: 29.7cm; }
+            .page:last-of-type { page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎓 Matrix Master</h1>
+    <p class="subtitle">พัฒนาโดย NANGSYTECH</p>
+    <div class="container">
+        <!-- Control Panel HTML remains the same -->
+        <div class="controls">
+            <h3>แผงควบคุม</h3>
+            <div class="control-group">
+                <label for="total-problems">จำนวนข้อทั้งหมด</label>
+                <input type="number" id="total-problems" value="12" min="1">
+            </div>
+            <div class="control-group">
+                <label for="operation-type">ประเภทของโจทย์</label>
+                <select id="operation-type">
+                    <option value="add">บวก</option>
+                    <option value="subtract">ลบ</option>
+                    <option value="multiply">คูณ</option>
+                    <option value="random">สุ่มทั้งหมด</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>มิติเมทริกซ์ A (แถว x หลัก)</label>
+                <div class="dimension-inputs">
+                    <input type="number" id="dim-a-rows" value="2" min="1">
+                    <span>x</span>
+                    <input type="number" id="dim-a-cols" value="3" min="1">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>มิติเมทริกซ์ B (แถว x หลัก)</label>
+                 <div class="dimension-inputs">
+                    <input type="number" id="dim-b-rows" value="2" min="1">
+                    <span>x</span>
+                    <input type="number" id="dim-b-cols" value="3" min="1">
+                </div>
+                <small id="dim-note" style="color: #888; margin-top: 5px; display: block;">บวก/ลบ: ขนาดต้องเท่ากัน</small>
+            </div>
+            <div class="control-group">
+                <label for="number-range">ช่วงตัวเลข (Min ถึง Max)</label>
+                <div class="range-inputs">
+                    <input type="number" id="num-min" value="-10">
+                    <input type="number" id="num-max" value="10">
+                </div>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="include-answers" checked>
+                <label for="include-answers">แนบเฉลยท้ายใบงาน</label>
+            </div>
+            <hr style="margin: 20px 0;">
+            <button id="generate-btn">สร้างใบงาน</button>
+            <button id="print-btn">บันทึกเป็น PDF / พิมพ์</button>
+        </div>
+        <div id="preview-container">
+            <!-- Generated pages will appear here -->
+        </div>
+    </div>
+    <script>
+        // --- JavaScript remains exactly the same as the previous version ---
+        function generateWorksheet() {
+            const totalProblems = parseInt(document.getElementById('total-problems').value);
+            let baseOperation = document.getElementById('operation-type').value;
+            const numMin = parseInt(document.getElementById('num-min').value);
+            const numMax = parseInt(document.getElementById('num-max').value);
+            const includeAnswers = document.getElementById('include-answers').checked;
+            previewContainer.innerHTML = '';
+            const allAnswers = [];
+            const operations = ['add', 'subtract', 'multiply'];
+            let currentPage = null;
+            let currentContentGrid = null;
+            for (let i = 1; i <= totalProblems; i++) {
+                if ((i - 1) % 4 === 0) {
+                    currentPage = document.createElement('div');
+                    currentPage.className = 'page';
+                    currentPage.innerHTML = `
+                        <header class="page-header">
+                            <span>ชื่อ - นามสกุล: <span class="header-field"></span></span>
+                            <span>เลขที่: <span class="header-field" style="min-width: 50px;"></span> ชั้น: <span class="header-field" style="min-width: 70px;"></span></span>
+                        </header>
+                        <main class="page-content"></main>
+                    `;
+                    previewContainer.appendChild(currentPage);
+                    currentContentGrid = currentPage.querySelector('.page-content');
+                }
+                let aRows, aCols, bRows, bCols, matrixA, matrixB, answer, op, opSymbol;
+                let isValidProblem = false;
+                while (!isValidProblem) {
+                    aRows = parseInt(dimARowsInput.value) || 2;
+                    aCols = parseInt(dimAColsInput.value) || 2;
+                    op = (baseOperation === 'random') ? operations[Math.floor(Math.random() * operations.length)] : baseOperation;
+                    if (op === 'add' || op === 'subtract') {
+                        bRows = aRows;
+                        bCols = aCols;
+                        opSymbol = (op === 'add') ? '+' : '-';
+                    } else { 
+                        bRows = aCols;
+                        bCols = parseInt(dimBColsInput.value) || 2;
+                        opSymbol = '\\times';
+                    }
+                    matrixA = createMatrix(aRows, aCols, numMin, numMax);
+                    matrixB = createMatrix(bRows, bCols, numMin, numMax);
+                    answer = performOperation(matrixA, matrixB, op);
+                    if (answer) { isValidProblem = true; }
+                }
+                const matrixALatex = formatMatrixToLatex(matrixA);
+                const matrixBLatex = formatMatrixToLatex(matrixB);
+                const problemLatex = `$$ ${matrixALatex} ${opSymbol} ${matrixBLatex} $$`;
+                const answerLatex = `$$ ${formatMatrixToLatex(answer)} $$`;
+                allAnswers.push({ num: i, problem: problemLatex, answer: answerLatex });
+                
+                const problemDiv = document.createElement('div');
+                problemDiv.className = 'problem-container';
+                problemDiv.innerHTML = `<div class="problem-statement"><strong>${i})</strong><div class="equation-wrapper">${problemLatex}</div></div>`;
+                currentContentGrid.appendChild(problemDiv);
+            }
+            if (includeAnswers && allAnswers.length > 0) {
+                const answerPage = document.createElement('div');
+                answerPage.className = 'page answer-key-page';
+                let answerHTML = allAnswers.map(item => 
+                    `<div class="answer-item"><strong>${item.num})</strong> ${item.answer}</div>`
+                ).join('');
+                answerPage.innerHTML = `<header class="page-header">เฉลยใบงาน</header><main class="answer-key-content">${answerHTML}</main><footer class="page-footer">พัฒนาโดย NANGSYTECH</footer>`;
+                previewContainer.appendChild(answerPage);
+            }
+            MathJax.typesetPromise().then(() => {
+                console.log('MathJax rendering complete.');
+                printBtn.style.display = 'block'; 
+            }).catch((err) => console.log('MathJax error: ', err));
+        }
+        const generateBtn = document.getElementById('generate-btn');
+        const printBtn = document.getElementById('print-btn');
+        const previewContainer = document.getElementById('preview-container');
+        const operationTypeSelect = document.getElementById('operation-type');
+        const dimARowsInput = document.getElementById('dim-a-rows');
+        const dimAColsInput = document.getElementById('dim-a-cols');
+        const dimBRowsInput = document.getElementById('dim-b-rows');
+        const dimBColsInput = document.getElementById('dim-b-cols');
+        const dimNote = document.getElementById('dim-note');
+        generateBtn.addEventListener('click', generateWorksheet);
+        printBtn.addEventListener('click', () => window.print());
+        operationTypeSelect.addEventListener('change', updateDimensionInputs);
+        dimARowsInput.addEventListener('input', updateDimensionInputs);
+        dimAColsInput.addEventListener('input', updateDimensionInputs);
+        function createMatrix(rows, cols, min, max) {
+            const matrix = [];
+            for (let i = 0; i < rows; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < cols; j++) {
+                    matrix[i][j] = Math.floor(Math.random() * (max - min + 1)) + min;
+                }
+            }
+            return matrix;
+        }
+        function formatMatrixToLatex(matrix) {
+            if (!matrix) return '';
+            let latex = '\\begin{bmatrix}';
+            latex += matrix.map(row => row.join(' & ')).join(' \\\\ ');
+            latex += '\\end{bmatrix}';
+            return latex;
+        }
+        function updateDimensionInputs() {
+            const opType = operationTypeSelect.value;
+            const aRows = parseInt(dimARowsInput.value);
+            const aCols = parseInt(dimAColsInput.value);
+            if (opType === 'add' || opType === 'subtract') {
+                dimBRowsInput.value = aRows;
+                dimBColsInput.value = aCols;
+                dimBRowsInput.disabled = true;
+                dimBColsInput.disabled = true;
+                dimNote.textContent = 'บวก/ลบ: ขนาดต้องเท่ากัน';
+            } else if (opType === 'multiply') {
+                dimBRowsInput.value = aCols; 
+                dimBRowsInput.disabled = true;
+                dimBColsInput.disabled = false;
+                dimNote.textContent = 'คูณ: หลัก A ต้องเท่ากับแถว B';
+            } else {
+                dimBRowsInput.disabled = false;
+                dimBColsInput.disabled = false;
+                dimNote.textContent = 'ขนาดต้องสอดคล้องกับประเภทโจทย์';
+            }
+        }
+        function performOperation(A, B, operation) {
+            const aRows = A.length;
+            const aCols = A[0].length;
+            const bRows = B.length;
+            const bCols = B[0].length;
+            let result = [];
+            switch (operation) {
+                case 'add':
+                    if (aRows !== bRows || aCols !== bCols) return null;
+                    return A.map((row, i) => row.map((val, j) => val + B[i][j]));
+                case 'subtract':
+                    if (aRows !== bRows || aCols !== bCols) return null;
+                    return A.map((row, i) => row.map((val, j) => val - B[i][j]));
+                case 'multiply':
+                    if (aCols !== bRows) return null;
+                    for (let i = 0; i < aRows; i++) {
+                        result[i] = [];
+                        for (let j = 0; j < bCols; j++) {
+                            let sum = 0;
+                            for (let k = 0; k < aCols; k++) {
+                                sum += A[i][k] * B[k][j];
+                            }
+                            result[i][j] = sum;
+                        }
+                    }
+                    return result;
+                default:
+                    return null;
+            }
+        }
+        updateDimensionInputs();
+    </script>
+</body>
+</html>
