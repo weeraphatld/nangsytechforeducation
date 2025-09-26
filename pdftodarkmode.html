@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แปลง PDF เป็นโหมดกลางคืน (พื้นดำ/อักษรขาว)</title>
+    <meta name="description" content="เครื่องมือแปลงไฟล์ PDF ของคุณให้เป็นโหมดกลางคืน (Dark Mode) ที่อ่านสบายตา ปลอดภัย และทำงานในเบราว์เซอร์ของคุณโดยตรง">
+    
+    <!-- นำเข้าไลบรารีที่จำเป็นจาก CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    
+    <style>
+        /* สไตล์ทั้งหมดรวมอยู่ในไฟล์เดียว */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #1a237e;
+            font-size: 2.2em;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        main {
+            width: 100%;
+            max-width: 650px;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .upload-area {
+            border: 2px dashed #3f51b5;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .upload-area.drag-over {
+            background-color: #e8eaf6;
+            border-color: #1a237e;
+        }
+
+        .upload-content img {
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .upload-content p {
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        #browse-btn {
+            background-color: #3f51b5;
+            color: white;
+        }
+        
+        #browse-btn:hover {
+             background-color: #303f9f;
+        }
+
+        #convert-btn {
+            background-color: #1a237e;
+            color: white;
+            width: 100%;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        
+        #convert-btn:hover {
+            background-color: #0d124f;
+        }
+
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-success:hover {
+            background-color: #45a049;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        #file-info {
+            background-color: #e8eaf6;
+            border-left: 5px solid #3f51b5;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        #processing-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3f51b5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #download-container {
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+        }
+        
+        footer {
+            margin-top: 30px;
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>แปลง PDF เป็นโหมดกลางคืน</h1>
+        <p>สลับสีเอกสาร PDF ของคุณให้เป็นพื้นหลังสีดำ ตัวอักษรสีขาว เพื่อการอ่านที่สบายตา</p>
+    </header>
+
+    <main>
+        <div id="upload-container" class="upload-area">
+            <div class="upload-content">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2MDY5YmUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVwbG9hZC1jbG91ZCI+PHBhdGggZD0iTTQgMTQgUzQgNCAxMiA0czggMTAgOCAxMCIvPjxwYXRoIGQ9Im0xMiA0IDQgNCIvPjxwYXRoIGQ9Im0xMiA0LTQgNCIvPjxwYXRoIGQ9Ik0xOSA4djEwYTIgMiAwIDAgMS0yIDJoLTEwYTIgMiAwIDAgMS0yLTJWOEgyIi8+PC9zdmc+" alt="Upload Icon">
+                <p>ลากไฟล์ PDF ของคุณมาวางที่นี่ หรือ</p>
+                <button type="button" id="browse-btn" class="btn">เลือกไฟล์จากคอมพิวเตอร์</button>
+            </div>
+            <input type="file" id="pdf-upload" accept=".pdf" hidden>
+        </div>
+
+        <div id="file-info" class="hidden">
+            <p><strong>ไฟล์ที่เลือก:</strong> <span id="file-name"></span> (<span id="file-size"></span>)</p>
+        </div>
+
+        <div id="action-container" class="hidden">
+            <button id="convert-btn" class="btn">แปลงเป็นโหมดกลางคืน</button>
+        </div>
+
+        <div id="processing-container" class="hidden">
+            <div class="loader"></div>
+            <p>กำลังประมวลผล... <span id="progress-text"></span></p>
+        </div>
+
+        <div id="download-container" class="hidden">
+            <h2>แปลงไฟล์สำเร็จ!</h2>
+            <p>ไฟล์โหมดกลางคืนของคุณพร้อมให้ดาวน์โหลดแล้ว</p>
+            <a id="download-btn" class="btn btn-success" download>ดาวน์โหลดไฟล์</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - เครื่องมือแปลง PDF โหมดกลางคืน by NANGSYTECH</p>
+    </footer>
+
+    <script>
+        // โค้ด JavaScript ทั้งหมดรวมอยู่ในไฟล์เดียว
+        
+        // กำหนด Worker source สำหรับ pdf.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
+
+        // ส่วนของ DOM Elements
+        const uploadContainer = document.getElementById('upload-container');
+        const pdfUpload = document.getElementById('pdf-upload');
+        const browseBtn = document.getElementById('browse-btn');
+        const fileInfo = document.getElementById('file-info');
+        const fileNameSpan = document.getElementById('file-name');
+        const fileSizeSpan = document.getElementById('file-size');
+        const actionContainer = document.getElementById('action-container');
+        const convertBtn = document.getElementById('convert-btn');
+        const processingContainer = document.getElementById('processing-container');
+        const progressText = document.getElementById('progress-text');
+        const downloadContainer = document.getElementById('download-container');
+        const downloadBtn = document.getElementById('download-btn');
+
+        let selectedFile = null;
+
+        // ฟังก์ชันลากและวาง
+        uploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.add('drag-over');
+        });
+        uploadContainer.addEventListener('dragleave', () => {
+            uploadContainer.classList.remove('drag-over');
+        });
+        uploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                handleFile(files[0]);
+            } else {
+                alert('กรุณาเลือกไฟล์ PDF เท่านั้น');
+            }
+        });
+
+        // ฟังก์ชันคลิกเลือกไฟล์
+        browseBtn.addEventListener('click', () => pdfUpload.click());
+        pdfUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            fileNameSpan.textContent = file.name;
+            fileSizeSpan.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+
+            // แสดงส่วนที่เกี่ยวข้องและซ่อนส่วนที่ไม่ต้องการ
+            fileInfo.classList.remove('hidden');
+            actionContainer.classList.remove('hidden');
+            downloadContainer.classList.add('hidden');
+            processingContainer.classList.add('hidden');
+        }
+
+        // ฟังก์ชันเมื่อกดปุ่มแปลงไฟล์
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            actionContainer.classList.add('hidden');
+            processingContainer.classList.remove('hidden');
+            progressText.textContent = '';
+
+            try {
+                const pdfBytes = await convertPdfToDarkMode(selectedFile);
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                downloadBtn.href = url;
+                const originalName = selectedFile.name.replace(/\.pdf$/i, '');
+                downloadBtn.download = `${originalName}_dark_mode.pdf`;
+
+                processingContainer.classList.add('hidden');
+                downloadContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาดในการแปลงไฟล์:', error);
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+                resetUI();
+            }
+        });
+        
+        async function convertPdfToDarkMode(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const numPages = pdfDoc.numPages;
+
+            const { PDFDocument } = PDFLib;
+            const newPdfDoc = await PDFDocument.create();
+
+            for (let i = 1; i <= numPages; i++) {
+                progressText.textContent = `หน้า ${i} จาก ${numPages}`;
+
+                const page = await pdfDoc.getPage(i);
+                // เพิ่ม scale เพื่อให้ภาพคมชัดขึ้น
+                const viewport = page.getViewport({ scale: 2.0 });
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                // --- ส่วนสำคัญ: การสลับสี ---
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                for (let j = 0; j < data.length; j += 4) {
+                    data[j] = 255 - data[j];         // Invert Red
+                    data[j + 1] = 255 - data[j + 1]; // Invert Green
+                    data[j + 2] = 255 - data[j + 2]; // Invert Blue
+                    // Alpha channel (data[j + 3]) ไม่ต้องเปลี่ยน
+                }
+                context.putImageData(imageData, 0, 0);
+                
+                // แปลง Canvas เป็นรูปภาพ (PNG) เพื่อนำไปใส่ใน PDF ใหม่
+                const pngImageBytes = await new Promise(resolve => {
+                    canvas.toBlob(blob => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(new Uint8Array(reader.result));
+                        reader.readAsArrayBuffer(blob);
+                    }, 'image/png');
+                });
+                
+                const pngImage = await newPdfDoc.embedPng(pngImageBytes);
+                const newPage = newPdfDoc.addPage([canvas.width, canvas.height]);
+                newPage.drawImage(pngImage, {
+                    x: 0,
+                    y: 0,
+                    width: canvas.width,
+                    height: canvas.height,
+                });
+            }
+
+            return await newPdfDoc.save();
+        }
+        
+        function resetUI() {
+            fileInfo.classList.add('hidden');
+            actionContainer.classList.add('hidden');
+            processingContainer.classList.add('hidden');
+            downloadContainer.classList.add('hidden');
+            pdfUpload.value = null;
+            selectedFile = null;
+        }
+
+    </script>
+</body>
+</html>
