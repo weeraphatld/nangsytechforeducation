@@ -5,29 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แบบสอบถามการใช้สมาร์ตโฟน</title>
     
-    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts: Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <!-- SweetAlert2 for Popups -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- QR Code Generator -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
 
     <style>
         body { font-family: 'Sarabun', sans-serif; }
         input[type="radio"]:checked + label {
-            border-color: #F97316; /* orange-500 */
-            background-color: #FFF7ED; /* orange-50 */
-            color: #C2410C; /* orange-700 */
+            border-color: #F97316;
+            background-color: #FFF7ED;
+            color: #C2410C;
             font-weight: 500;
         }
         .likert-cell { min-width: 50px; }
@@ -35,27 +26,23 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 z-50 flex-col items-center justify-center hidden bg-black/50 backdrop-blur-sm">
         <i class="fas fa-spinner fa-spin text-white text-5xl"></i>
         <p class="mt-4 text-white text-lg">กำลังส่งข้อมูล...</p>
     </div>
 
     <div class="container mx-auto max-w-4xl p-4 sm:p-8">
-        <!-- Header -->
         <header class="w-full p-6 bg-orange-600 rounded-t-xl shadow-lg">
             <h1 class="text-2xl sm:text-3xl font-bold text-white text-center">
                 แบบสอบถามการใช้สมาร์ตโฟนของนิสิตสาขาวิชาคณิตศาสตร์ คณะศึกษาศาสตร์ มหาวิทยาลัยมหาสารคาม
             </h1>
         </header>
 
-        <!-- Form Container -->
         <div class="bg-white p-6 sm:p-8 rounded-b-xl shadow-lg">
             <form id="surveyForm">
-
-                <!-- Section: คำชี้แจง -->
+                <!-- Section: คำชี้แจง (เนื้อหาเหมือนเดิม) -->
                 <section class="mb-10">
-                    <h2 class="text-xl font-bold text-orange-600 border-b-2 border-orange-200 pb-2 mb-4 flex items-center">
+                     <h2 class="text-xl font-bold text-orange-600 border-b-2 border-orange-200 pb-2 mb-4 flex items-center">
                         <i class="fas fa-info-circle mr-3"></i>คำชี้แจง
                     </h2>
                     <div class="space-y-3 text-gray-700">
@@ -70,8 +57,8 @@
                         <p>ผู้วิจัยขอขอบคุณในความร่วมมือของท่านมา ณ โอกาสนี้</p>
                     </div>
                 </section>
-
-                <!-- Section: ตอนที่ 1 -->
+                
+                <!-- Section: ตอนที่ 1 (เนื้อหาเหมือนเดิม) -->
                 <section class="mb-10">
                     <h2 class="text-xl font-bold text-orange-600 border-b-2 border-orange-200 pb-2 mb-4 flex items-center">
                         <i class="fas fa-user-graduate mr-3"></i>ตอนที่ 1: ข้อมูลทั่วไปของผู้ตอบแบบสอบถาม
@@ -83,7 +70,7 @@
                                 <input type="radio" name="year" value="ชั้นปีที่ 2" id="year2" class="hidden" required>
                                 <label for="year2" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">ชั้นปีที่ 2 (รหัสนิสิตขึ้นต้นด้วย 67)</label>
                                 
-                                <input type="radio" name="year" value="ชั้นปีที่ 3" id="year3" class="hidden">
+                                <input type="radio" name="year" value="ชั้นปีที่ 3" id="year3" class="hidden" required>
                                 <label for="year3" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">ชั้นปีที่ 3 (รหัสนิสิตขึ้นต้นด้วย 66)</label>
                             </div>
                         </div>
@@ -93,8 +80,8 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- Section: ตอนที่ 2 -->
+                
+                <!-- Section: ตอนที่ 2 (เนื้อหาเหมือนเดิม) -->
                 <section class="mb-10">
                     <h2 class="text-xl font-bold text-orange-600 border-b-2 border-orange-200 pb-2 mb-4 flex items-center">
                         <i class="fas fa-clock mr-3"></i>ตอนที่ 2: พฤติกรรมการใช้สมาร์ตโฟนด้านระยะเวลา
@@ -103,15 +90,15 @@
                         <label class="block text-gray-800 font-medium mb-2">โดยเฉลี่ยในแต่ละวันท่านใช้เวลาในการใช้สมาร์ตโฟนเป็นเวลานานเท่าใด (รวมทุกกิจกรรม)</label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             <input type="radio" name="duration" value="น้อยกว่า 3 ชั่วโมง" id="d1" class="hidden" required><label for="d1" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">น้อยกว่า 3 ชั่วโมง</label>
-                            <input type="radio" name="duration" value="3-5 ชั่วโมง" id="d2" class="hidden"><label for="d2" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">3-5 ชั่วโมง</label>
-                            <input type="radio" name="duration" value="6-8 ชั่วโมง" id="d3" class="hidden"><label for="d3" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">6-8 ชั่วโมง</label>
-                            <input type="radio" name="duration" value="8-10 ชั่วโมง" id="d4" class="hidden"><label for="d4" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">8-10 ชั่วโมง</label>
-                            <input type="radio" name="duration" value="10 ชั่วโมงขึ้นไป" id="d5" class="hidden"><label for="d5" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">10 ชั่วโมงขึ้นไป</label>
+                            <input type="radio" name="duration" value="3-5 ชั่วโมง" id="d2" class="hidden" required><label for="d2" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">3-5 ชั่วโมง</label>
+                            <input type="radio" name="duration" value="6-8 ชั่วโมง" id="d3" class="hidden" required><label for="d3" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">6-8 ชั่วโมง</label>
+                            <input type="radio" name="duration" value="8-10 ชั่วโมง" id="d4" class="hidden" required><label for="d4" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">8-10 ชั่วโมง</label>
+                            <input type="radio" name="duration" value="10 ชั่วโมงขึ้นไป" id="d5" class="hidden" required><label for="d5" class="p-4 border rounded-lg cursor-pointer transition duration-200 hover:border-orange-500 text-center">10 ชั่วโมงขึ้นไป</label>
                         </div>
                     </div>
                 </section>
 
-                <!-- Section: ตอนที่ 3 -->
+                <!-- Section: ตอนที่ 3 (เนื้อหาเหมือนเดิม) -->
                 <section class="mb-10">
                     <h2 class="text-xl font-bold text-orange-600 border-b-2 border-orange-200 pb-2 mb-4 flex items-center">
                         <i class="fas fa-tasks mr-3"></i>ตอนที่ 3: พฤติกรรมการใช้สมาร์ตโฟนด้านวัตถุประสงค์
@@ -119,75 +106,46 @@
                     <p class="bg-orange-50 text-orange-800 p-3 rounded-lg mb-6"><strong>คำชี้แจง:</strong> เลือกช่องที่ตรงกับระดับความถี่ในการใช้สมาร์ตโฟนเพื่อทำกิจกรรมต่างๆ ของท่านมากที่สุด (5 = มากที่สุด, 4 = มาก, 3 = ปานกลาง, 2 = น้อย, 1 = น้อยที่สุด)</p>
                     
                     <div class="space-y-8">
-                        <!-- ด้านการเรียน -->
                         <div>
-                            <h3 id="learning-header" class="text-lg font-semibold text-gray-800 mb-4">ด้านการเรียน</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ด้านการเรียน</h3>
                             <div class="overflow-x-auto border rounded-lg">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50"><tr><th class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กิจกรรม</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">5</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">4</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">3</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">2</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">1</th></tr></thead>
-                                    <tbody id="learning-table-body" class="bg-white divide-y divide-gray-200">
-                                        <!-- Questions will be inserted here by JavaScript -->
-                                    </tbody>
+                                    <tbody id="learning-table-body" class="bg-white divide-y divide-gray-200"></tbody>
                                 </table>
                             </div>
                         </div>
-                        
-                        <!-- ด้านความบันเทิง -->
                         <div>
-                             <h3 id="entertainment-header" class="text-lg font-semibold text-gray-800 mb-4">ด้านความบันเทิง</h3>
+                             <h3 class="text-lg font-semibold text-gray-800 mb-4">ด้านความบันเทิง</h3>
                             <div class="overflow-x-auto border rounded-lg">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50"><tr><th class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กิจกรรม</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">5</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">4</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">3</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">2</th><th class="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider likert-cell">1</th></tr></thead>
-                                    <tbody id="entertainment-table-body" class="bg-white divide-y divide-gray-200">
-                                        <!-- Entertainment questions will be inserted here -->
-                                    </tbody>
+                                    <tbody id="entertainment-table-body" class="bg-white divide-y divide-gray-200"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- ข้อเสนอแนะ -->
                      <div class="mt-8">
                         <label for="suggestions" class="block text-gray-800 font-medium mb-2">ข้อเสนอแนะหรือความคิดเห็นเกี่ยวกับการใช้สมาร์ตโฟน (ถ้ามี)</label>
                         <textarea id="suggestions" name="suggestions" placeholder="แสดงความคิดเห็นเพิ่มเติม..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition min-h-[100px]"></textarea>
                     </div>
                 </section>
 
-                <!-- Submit Button -->
                 <button type="submit" id="submitBtn" class="w-full bg-orange-600 text-white font-bold text-lg p-4 rounded-lg shadow-md hover:bg-orange-700 transition duration-300 transform hover:-translate-y-1 flex items-center justify-center">
                     <i class="fas fa-paper-plane mr-3"></i> ส่งข้อมูล
                 </button>
-
             </form>
         </div>
     </div>
 
 <script>
-    // --- Data for Likert Scale Questions ---
+    // --- Data and Table Generation ---
     const questions = {
         learning: [
-            { id: 'q1', text: '1. ใช้เพื่อสืบค้นข้อมูลประกอบการเรียนการสอน' },
-            { id: 'q2', text: '2. ใช้อ่านเอกสารประกอบการเรียน หรือหนังสืออิเล็กทรอนิกส์ (E-book)' },
-            { id: 'q3', text: '3. ใช้เพื่อติดต่อสื่อสารกับอาจารย์และเพื่อนในเรื่องที่เกี่ยวกับการเรียน' },
-            { id: 'q4', text: '4. ใช้เข้าถึงระบบจัดการการเรียนรู้ของมหาวิทยาลัย (LMS) เช่น Google Classroom เพื่อดาวน์โหลดเอกสารหรือส่งงาน' },
-            { id: 'q5', text: '5. ใช้รับชมวิดีโอการสอนย้อนหลัง หรือคลิปวิดีโอที่เกี่ยวข้องกับบทเรียน' },
-            { id: 'q6', text: '6. ใช้ถ่ายภาพสไลด์บรรยายบนกระดาน หรือจดบันทึกเนื้อหาการเรียน' },
-            { id: 'q7', text: '7. ใช้แอปพลิเคชันที่เกี่ยวข้องกับการศึกษา (เช่น แอปพจนานุกรม, แอปคำนวณ)' },
-            { id: 'q8', text: '8. ใช้จัดการตารางเรียน/ตารางสอบ และตั้งเตือนกำหนดการส่งงาน' },
-            { id: 'q9', text: '9. ใช้ทำงานกลุ่มร่วมกับเพื่อนผ่านแอปพลิเคชัน (ได้แก่ Google Docs, Google Drive)' },
-            { id: 'q10', text: '10. ใช้ฟังพอดแคสต์ (Podcast) หรือสื่อเสียงเพื่อการศึกษา' },
+            { id: 'q1', text: 'ใช้เพื่อสืบค้นข้อมูลประกอบการเรียนการสอน' }, { id: 'q2', text: 'ใช้อ่านเอกสารประกอบการเรียน หรือหนังสืออิเล็กทรอนิกส์ (E-book)' }, { id: 'q3', text: 'ใช้เพื่อติดต่อสื่อสารกับอาจารย์และเพื่อนในเรื่องที่เกี่ยวกับการเรียน' }, { id: 'q4', text: 'ใช้เข้าถึงระบบจัดการการเรียนรู้ของมหาวิทยาลัย (LMS) เช่น Google Classroom เพื่อดาวน์โหลดเอกสารหรือส่งงาน' }, { id: 'q5', text: 'ใช้รับชมวิดีโอการสอนย้อนหลัง หรือคลิปวิดีโอที่เกี่ยวข้องกับบทเรียน' }, { id: 'q6', text: 'ใช้ถ่ายภาพสไลด์บรรยายบนกระดาน หรือจดบันทึกเนื้อหาการเรียน' }, { id: 'q7', text: 'ใช้แอปพลิเคชันที่เกี่ยวข้องกับการศึกษา (เช่น แอปพจนานุกรม, แอปคำนวณ)' }, { id: 'q8', text: 'ใช้จัดการตารางเรียน/ตารางสอบ และตั้งเตือนกำหนดการส่งงาน' }, { id: 'q9', text: 'ใช้ทำงานกลุ่มร่วมกับเพื่อนผ่านแอปพลิเคชัน (ได้แก่ Google Docs, Google Drive)' }, { id: 'q10', text: 'ใช้ฟังพอดแคสต์ (Podcast) หรือสื่อเสียงเพื่อการศึกษา' },
         ],
         entertainment: [
-            { id: 'q11', text: '11. ใช้สื่อสังคมออนไลน์ (Social Media) เพื่อติดตาม/อ่าน/ดูโพสต์ของผู้อื่น (ได้แก่ Facebook, Instagram, X)' },
-            { id: 'q12', text: '12. ใช้สื่อสังคมออนไลน์ (Social Media) เพื่อสร้างและโพสต์เนื้อหาของตนเอง (ได้แก่ การโพสต์รูป, สตอรี่, วิดีโอสั้น Reels/TikTok)' },
-            { id: 'q13', text: '13. ใช้รับชมภาพยนตร์ หรือซีรีส์ ผ่านบริการสตรีมมิ่ง (ได้แก่ Netflix, Disney+, Viu)' },
-            { id: 'q14', text: '14. ใช้รับชมวิดีโอคลิปเพื่อความเพลิดเพลิน (ได้แก่ YouTube, TikTok, Facebook Watch)' },
-            { id: 'q15', text: '15. ใช้ฟังเพลง หรือพอดแคสต์ (Podcast) เพื่อความผ่อนคลาย (ได้แก่ Spotify, Joox, Apple Music)' },
-            { id: 'q16', text: '16. ใช้เล่นเกมออนไลน์ หรือเกมที่ติดตั้งในสมาร์ตโฟน' },
-            { id: 'q17', text: '17. ใช้อ่านนิยาย, การ์ตูนออนไลน์ (Webtoon) หรือบทความเพื่อความบันเทิง' },
-            { id: 'q18', text: '18. ใช้รับชมการถ่ายทอดสด (Live Streaming) ของเกมเมอร์, ศิลปิน หรือ Influencer' },
-            { id: 'q19', text: '19. ใช้ติดตามข่าวสารความเคลื่อนไหวของศิลปิน, ดารา, หรือบุคคลที่ชื่นชอบเป็นการส่วนตัว' },
-            { id: 'q20', text: '20. ใช้ค้นหาสินค้าที่ต้องการซื้อผ่านแพลตฟอร์มอีคอมเมิร์ซ (Shopee, Lazada)' },
+            { id: 'q11', text: 'ใช้สื่อสังคมออนไลน์ (Social Media) เพื่อติดตาม/อ่าน/ดูโพสต์ของผู้อื่น (ได้แก่ Facebook, Instagram, X)' }, { id: 'q12', text: 'ใช้สื่อสังคมออนไลน์ (Social Media) เพื่อสร้างและโพสต์เนื้อหาของตนเอง (ได้แก่ การโพสต์รูป, สตอรี่, วิดีโอสั้น Reels/TikTok)' }, { id: 'q13', text: 'ใช้รับชมภาพยนตร์ หรือซีรีส์ ผ่านบริการสตรีมมิ่ง (ได้แก่ Netflix, Disney+, Viu)' }, { id: 'q14', text: 'ใช้รับชมวิดีโอคลิปเพื่อความเพลิดเพลิน (ได้แก่ YouTube, TikTok, Facebook Watch)' }, { id: 'q15', text: 'ใช้ฟังเพลง หรือพอดแคสต์ (Podcast) เพื่อความผ่อนคลาย (ได้แก่ Spotify, Joox, Apple Music)' }, { id: 'q16', text: 'ใช้เล่นเกมออนไลน์ หรือเกมที่ติดตั้งในสมาร์ตโฟน' }, { id: 'q17', text: 'ใช้อ่านนิยาย, การ์ตูนออนไลน์ (Webtoon) หรือบทความเพื่อความบันเทิง' }, { id: 'q18', text: 'ใช้รับชมการถ่ายทอดสด (Live Streaming) ของเกมเมอร์, ศิลปิน หรือ Influencer' }, { id: 'q19', text: 'ใช้ติดตามข่าวสารความเคลื่อนไหวของศิลปิน, ดารา, หรือบุคคลที่ชื่นชอบเป็นการส่วนตัว' }, { id: 'q20', text: 'ใช้ค้นหาสินค้าที่ต้องการซื้อผ่านแพลตฟอร์มอีคอมเมิร์ซ (Shopee, Lazada)' },
         ]
     };
 
@@ -200,10 +158,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // ** จุดที่แก้ไข **
         const learningTableBody = document.getElementById('learning-table-body');
         const entertainmentTableBody = document.getElementById('entertainment-table-body');
-        
         learningTableBody.innerHTML = questions.learning.map(createLikertRow).join('');
         entertainmentTableBody.innerHTML = questions.entertainment.map(createLikertRow).join('');
     });
@@ -231,10 +187,10 @@
         })
         .then(response => response.json())
         .then(result => {
-            if (result.status === 'success') {
+            if (result.status === 'success' && result.token) {
                 handleSuccess(result.token);
             } else {
-                throw new Error(result.message || 'Unknown error occurred');
+                throw new Error(result.message || 'An unknown error occurred on the server.');
             }
         })
         .catch(error => {
@@ -253,12 +209,22 @@
     });
 
     function handleSuccess(token) {
-        const link = `https://weeraphatld.github.io/nangsytechforeducation/soundalert.html?token=${token}`;
+        const link = `https://weeraphatld.github.io/nangsytechforeducation/soundalert?token=${token}`;
         
-        const qr = qrcode(4, 'L');
-        qr.addData(link);
-        qr.make();
-        const qrCodeDataUrl = qr.createDataURL(6, 10);
+        let qrCodeDataUrl;
+        try {
+            // --- *** จุดที่แก้ไข *** ---
+            // เพิ่ม Type Number จาก 4 เป็น 5 เพื่อให้มีขนาดความจุเพียงพอ
+            const typeNumber = 5; 
+            const errorCorrectionLevel = 'L';
+            const qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(link);
+            qr.make();
+            qrCodeDataUrl = qr.createDataURL(5, 8); // ปรับขนาด cell และ margin ให้เล็กลงเล็กน้อย
+        } catch (e) {
+            console.error("Could not generate QR Code", e);
+            qrCodeDataUrl = '';
+        }
 
         Swal.fire({
             title: 'ส่งข้อมูลสำเร็จ!',
@@ -267,7 +233,7 @@
                     <p>ขอขอบคุณที่ให้ความร่วมมือในการตอบแบบสอบถาม</p>
                     <p class="p-3 bg-red-100 text-red-700 font-bold rounded-lg">กรุณาบันทึกภาพหน้าจอนี้ไว้ เพื่อป้องกันลิงก์หาย</p>
                     <img src="${qrCodeDataUrl}" alt="QR Code" class="w-48 h-48 mx-auto my-4 border rounded-lg p-2">
-                    <p>Token ของคุณ: <strong class="bg-gray-200 p-1 rounded">${token}</strong></p>
+                    <p>Token ของคุณ: <strong class="bg-gray-200 p-1 rounded break-all">${token}</strong></p>
                     <a href="${link}" target="_blank" class="block w-full text-center p-3 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition">ไปยังลิงก์</a>
                 </div>
             `,
@@ -282,6 +248,3 @@
 
 </body>
 </html>
-
-
-
