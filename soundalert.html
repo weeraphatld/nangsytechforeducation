@@ -252,6 +252,4 @@
     async function saveEmail(token, email) { try { Swal.showLoading(); const response = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveEmail", token: token, email: email }) }); const result = await response.json(); if (result.status === "success") { Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'ระบบพร้อมเริ่มการตรวจจับเสียงแล้ว', timer: 2000, showConfirmButton: false }); document.getElementById('loader').style.display = 'none'; document.getElementById('main-content').style.display = 'flex'; document.getElementById('footer-content').style.display = 'block'; document.getElementById('email').value = email; } else { Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกอีเมลได้', 'error'); } } catch (err) { Swal.fire('เกิดข้อผิดพลาด', 'การเชื่อมต่อล้มเหลว', 'error'); console.error(err); } }
   </script>
 </body>
-
 </html>
-
