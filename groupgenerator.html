@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดกลุ่มสุ่มรายชื่อ (Group Generator)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- SheetJS (XLSX) Library for Excel handling -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: Noto Sans Thai -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-indigo-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold"><i class="fas fa-users-cog mr-2"></i>ระบบจัดกลุ่มอัตโนมัติ</h1>
+            <div class="text-sm opacity-80">Export Excel & JSON Support</div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Inputs -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- 1. Name Input Section -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-lg font-semibold mb-4 border-b pb-2 text-indigo-600">
+                        <i class="fas fa-user-plus mr-2"></i>1. เพิ่มรายชื่อ
+                    </h2>
+
+                    <!-- Tabs -->
+                    <div class="flex mb-4 border-b">
+                        <button id="tabManual" class="flex-1 py-2 text-indigo-600 border-b-2 border-indigo-600 font-medium focus:outline-none" onclick="switchTab('manual')">พิมพ์เอง</button>
+                        <button id="tabExcel" class="flex-1 py-2 text-gray-500 hover:text-indigo-500 focus:outline-none" onclick="switchTab('excel')">Excel Import</button>
+                    </div>
+
+                    <!-- Manual Input -->
+                    <div id="manualInputSection">
+                        <label class="block text-sm text-gray-600 mb-2">กรอกรายชื่อ (Enter เพื่อขึ้นบรรทัดใหม่)</label>
+                        <textarea id="manualNames" class="w-full h-40 p-3 border rounded-md focus:ring-2 focus:ring-indigo-300 focus:outline-none text-sm" placeholder="สมชาย&#10;สมหญิง&#10;จอห์น..."></textarea>
+                        <button onclick="addManualNames()" class="mt-3 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded transition">
+                            <i class="fas fa-plus-circle mr-1"></i> เพิ่มรายชื่อเข้าระบบ
+                        </button>
+                    </div>
+
+                    <!-- Excel Input -->
+                    <div id="excelInputSection" class="hidden">
+                        <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                            <input type="file" id="excelFile" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this)">
+                            <i class="fas fa-file-excel text-green-500 text-3xl mb-2"></i>
+                            <p class="text-sm text-gray-500" id="fileNameDisplay">คลิกเพื่อเลือกไฟล์ Excel</p>
+                        </div>
+                        
+                        <div id="columnSelector" class="mt-4 hidden">
+                            <label class="block text-sm text-gray-600 mb-1">เลือกคอลัมน์ที่มีชื่อ:</label>
+                            <select id="excelHeaderSelect" class="w-full p-2 border rounded bg-white text-sm">
+                                <!-- Options populated via JS -->
+                            </select>
+                            <button onclick="importFromExcel()" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded transition">
+                                <i class="fas fa-file-import mr-1"></i> นำเข้าข้อมูล
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Name Counter with View Button -->
+                    <div class="mt-4 p-3 bg-gray-50 rounded border flex justify-between items-center">
+                        <span class="text-sm font-medium">รายชื่อในระบบ:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="totalNamesCount" class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-bold">0 คน</span>
+                            <button onclick="showNameListModal()" class="text-gray-500 hover:text-indigo-600 focus:outline-none transition p-1" title="ดูรายชื่อทั้งหมด">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2 text-right">
+                        <button onclick="clearAllNames()" class="text-xs text-red-500 hover:text-red-700 underline">ล้างรายชื่อทั้งหมด</button>
+                    </div>
+                </div>
+
+                <!-- 2. Group Configuration Section -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-lg font-semibold mb-4 border-b pb-2 text-indigo-600">
+                        <i class="fas fa-layer-group mr-2"></i>2. ตั้งค่ากลุ่ม
+                    </h2>
+                    
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <div class="col-span-2">
+                            <label class="block text-xs text-gray-500 mb-1">ชื่อกลุ่ม</label>
+                            <input type="text" id="groupNameInput" class="w-full p-2 border rounded text-sm" placeholder="เช่น กลุ่ม A">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">รับได้ (คน)</label>
+                            <input type="number" id="groupLimitInput" class="w-full p-2 border rounded text-sm" value="5" min="1">
+                        </div>
+                    </div>
+                    <button onclick="addGroup()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded transition mb-4">
+                        <i class="fas fa-plus mr-1"></i> สร้างกลุ่ม
+                    </button>
+
+                    <div id="groupConfigList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <!-- Group Config Items go here -->
+                        <p class="text-center text-gray-400 text-sm italic py-2">ยังไม่มีกลุ่มที่สร้าง</p>
+                    </div>
+
+                    <!-- Total Capacity Counter Added -->
+                    <div class="mt-4 p-3 bg-blue-50 rounded border border-blue-100 flex justify-between items-center">
+                        <span class="text-sm font-medium text-blue-800">ความจุรวมทุกกลุ่ม:</span>
+                        <span id="totalGroupCapacity" class="font-bold text-blue-700">0 คน</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Results & Actions -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Action Buttons -->
+                <div class="bg-white p-4 rounded-lg shadow-md flex flex-wrap gap-3 items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-700">3. ผลลัพธ์การจัดกลุ่ม</h2>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="generateGroups()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded shadow transition font-bold">
+                            <i class="fas fa-dice mr-2"></i> สุ่มจัดกลุ่ม
+                        </button>
+                        <button onclick="resetResults()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded transition">
+                            <i class="fas fa-undo"></i> รีเซ็ต
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Area -->
+                <div id="resultsArea" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Groups will be rendered here -->
+                    <div class="col-span-1 md:col-span-2 text-center py-12 text-gray-400 border-2 border-dashed border-gray-300 rounded-lg">
+                        <i class="fas fa-clipboard-list text-4xl mb-3"></i>
+                        <p>เพิ่มรายชื่อ และ สร้างกลุ่ม จากนั้นกดปุ่ม "สุ่มจัดกลุ่ม"</p>
+                    </div>
+                </div>
+
+                <!-- Unassigned Section -->
+                <div id="unassignedArea" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h3 class="text-red-700 font-bold mb-2 flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i> ยังไม่มีกลุ่ม (เกินจำนวนรับ)
+                    </h3>
+                    <ul id="unassignedList" class="list-disc list-inside text-sm text-gray-700 columns-2 md:columns-3">
+                    </ul>
+                </div>
+
+                <!-- Export Section -->
+                <div id="exportSection" class="hidden bg-white p-4 rounded-lg shadow-md border-t-4 border-green-500">
+                    <h3 class="font-bold text-gray-700 mb-3">ส่งออกข้อมูล (Export)</h3>
+                    <div class="flex gap-3">
+                        <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition flex items-center">
+                            <i class="fas fa-file-excel mr-2"></i> Download Excel
+                        </button>
+                        <!-- JSON Button Removed -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal for Name List -->
+    <div id="nameListModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative p-6 border w-96 shadow-xl rounded-lg bg-white max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800">รายชื่อทั้งหมด</h3>
+                <button onclick="closeNameListModal()" class="text-gray-400 hover:text-red-500 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="overflow-y-auto border rounded-md p-2 bg-gray-50 flex-grow">
+                <ul id="modalNameList" class="divide-y divide-gray-200 text-sm text-gray-700">
+                    <!-- List items will be injected here -->
+                </ul>
+                <div id="emptyListMsg" class="text-center text-gray-400 py-4 hidden">
+                    ไม่มีรายชื่อในระบบ
+                </div>
+            </div>
+            <div class="mt-4 text-right">
+                <button onclick="closeNameListModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm font-medium transition">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // --- State Management ---
+        let allNames = []; // Array of strings
+        let groupsConfig = []; // Array of { id, name, limit }
+        let groupedResults = []; // Array of { groupName, members: [] }
+        let unassignedMembers = []; // Array of strings
+        let excelDataRaw = []; // To store temp excel data before column selection
+
+        // --- DOM Elements ---
+        const totalNamesCountEl = document.getElementById('totalNamesCount');
+        const groupConfigListEl = document.getElementById('groupConfigList');
+        const resultsAreaEl = document.getElementById('resultsArea');
+        const unassignedAreaEl = document.getElementById('unassignedArea');
+        const unassignedListEl = document.getElementById('unassignedList');
+        const exportSectionEl = document.getElementById('exportSection');
+
+        // --- Tab Switching ---
+        function switchTab(tab) {
+            const manualBtn = document.getElementById('tabManual');
+            const excelBtn = document.getElementById('tabExcel');
+            const manualDiv = document.getElementById('manualInputSection');
+            const excelDiv = document.getElementById('excelInputSection');
+
+            if (tab === 'manual') {
+                manualBtn.className = "flex-1 py-2 text-indigo-600 border-b-2 border-indigo-600 font-medium focus:outline-none";
+                excelBtn.className = "flex-1 py-2 text-gray-500 hover:text-indigo-500 focus:outline-none";
+                manualDiv.classList.remove('hidden');
+                excelDiv.classList.add('hidden');
+            } else {
+                excelBtn.className = "flex-1 py-2 text-indigo-600 border-b-2 border-indigo-600 font-medium focus:outline-none";
+                manualBtn.className = "flex-1 py-2 text-gray-500 hover:text-indigo-500 focus:outline-none";
+                excelDiv.classList.remove('hidden');
+                manualDiv.classList.add('hidden');
+            }
+        }
+
+        // --- Name Management ---
+        function updateNameCount() {
+            totalNamesCountEl.textContent = `${allNames.length} คน`;
+        }
+
+        // Modal Functions
+        function showNameListModal() {
+            const modal = document.getElementById('nameListModal');
+            const listEl = document.getElementById('modalNameList');
+            const emptyMsg = document.getElementById('emptyListMsg');
+            
+            listEl.innerHTML = '';
+            
+            if (allNames.length === 0) {
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+                allNames.forEach((name, index) => {
+                    const li = document.createElement('li');
+                    li.className = "py-2 px-2 flex items-center hover:bg-white transition rounded";
+                    li.innerHTML = `<span class="text-xs font-mono text-gray-400 w-8 text-right mr-2">${index + 1}.</span> ${name}`;
+                    listEl.appendChild(li);
+                });
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeNameListModal() {
+            document.getElementById('nameListModal').classList.add('hidden');
+        }
+
+        function addManualNames() {
+            const textarea = document.getElementById('manualNames');
+            const rawText = textarea.value;
+            if (!rawText.trim()) return;
+
+            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line !== '');
+            
+            allNames = [...allNames, ...lines];
+            textarea.value = '';
+            updateNameCount();
+            alert(`เพิ่ม ${lines.length} รายชื่อเรียบร้อยแล้ว`);
+        }
+
+        function clearAllNames() {
+            if(confirm('ต้องการลบรายชื่อทั้งหมดใช่หรือไม่?')) {
+                allNames = [];
+                updateNameCount();
+                resetResults();
+            }
+        }
+
+        // --- Excel Import Logic ---
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            document.getElementById('fileNameDisplay').textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                // Get first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert to JSON (Header: 1 means array of arrays)
+                excelDataRaw = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                
+                if (excelDataRaw.length > 0) {
+                    populateColumnSelector(excelDataRaw[0]); // First row is header
+                } else {
+                    alert('ไฟล์ไม่มีข้อมูล');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function populateColumnSelector(headers) {
+            const select = document.getElementById('excelHeaderSelect');
+            select.innerHTML = '';
+            
+            headers.forEach((header, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = header || `Column ${index + 1}`;
+                select.appendChild(option);
+            });
+            
+            document.getElementById('columnSelector').classList.remove('hidden');
+        }
+
+        function importFromExcel() {
+            const select = document.getElementById('excelHeaderSelect');
+            const colIndex = parseInt(select.value);
+            
+            let newNames = [];
+            // Start from index 1 (skip header)
+            for (let i = 1; i < excelDataRaw.length; i++) {
+                const row = excelDataRaw[i];
+                if (row[colIndex] !== undefined && row[colIndex] !== null) {
+                    const name = String(row[colIndex]).trim();
+                    if (name !== '') {
+                        newNames.push(name);
+                    }
+                }
+            }
+            
+            allNames = [...allNames, ...newNames];
+            updateNameCount();
+            
+            // Reset UI
+            document.getElementById('columnSelector').classList.add('hidden');
+            document.getElementById('fileNameDisplay').textContent = 'คลิกเพื่อเลือกไฟล์ Excel';
+            document.getElementById('excelFile').value = '';
+            
+            alert(`นำเข้า ${newNames.length} รายชื่อจาก Excel เรียบร้อยแล้ว`);
+            switchTab('manual'); // Switch back to view count easily
+        }
+
+        // --- Group Configuration ---
+        function addGroup() {
+            const nameInput = document.getElementById('groupNameInput');
+            const limitInput = document.getElementById('groupLimitInput');
+            
+            const name = nameInput.value.trim();
+            const limit = parseInt(limitInput.value);
+            
+            if (!name) {
+                alert('กรุณาใส่ชื่อกลุ่ม');
+                return;
+            }
+            if (limit < 1) {
+                alert('จำนวนรับต้องมากกว่า 0');
+                return;
+            }
+
+            const newGroup = {
+                id: Date.now(),
+                name: name,
+                limit: limit
+            };
+            
+            groupsConfig.push(newGroup);
+            nameInput.value = '';
+            
+            renderGroupsConfig();
+        }
+
+        function removeGroup(id) {
+            groupsConfig = groupsConfig.filter(g => g.id !== id);
+            renderGroupsConfig();
+        }
+
+        function renderGroupsConfig() {
+            // Update Total Capacity
+            const totalCapacity = groupsConfig.reduce((sum, group) => sum + group.limit, 0);
+            const totalCapEl = document.getElementById('totalGroupCapacity');
+            if(totalCapEl) totalCapEl.textContent = `${totalCapacity} คน`;
+
+            groupConfigListEl.innerHTML = '';
+            
+            if (groupsConfig.length === 0) {
+                groupConfigListEl.innerHTML = '<p class="text-center text-gray-400 text-sm italic py-2">ยังไม่มีกลุ่มที่สร้าง</p>';
+                return;
+            }
+
+            groupsConfig.forEach(group => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200';
+                div.innerHTML = `
+                    <div>
+                        <span class="font-semibold text-gray-700 text-sm">${group.name}</span>
+                        <span class="text-xs text-gray-500 ml-2">(รับ ${group.limit} คน)</span>
+                    </div>
+                    <button onclick="removeGroup(${group.id})" class="text-red-400 hover:text-red-600">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                groupConfigListEl.appendChild(div);
+            });
+        }
+
+        // --- Core Logic: Randomize Groups ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateGroups() {
+            if (allNames.length === 0) {
+                alert('กรุณาเพิ่มรายชื่อก่อน');
+                return;
+            }
+            if (groupsConfig.length === 0) {
+                alert('กรุณาสร้างกลุ่มอย่างน้อย 1 กลุ่ม');
+                return;
+            }
+
+            // 1. Shuffle Names
+            const shuffledNames = shuffleArray([...allNames]);
+            
+            // 2. Prepare Groups Data Structure
+            let processedGroups = groupsConfig.map(g => ({
+                ...g,
+                members: []
+            }));
+            
+            unassignedMembers = [];
+
+            // 3. Distribution Logic
+            shuffledNames.forEach(person => {
+                const availableGroups = processedGroups.filter(g => g.members.length < g.limit);
+                
+                if (availableGroups.length > 0) {
+                    // Pick a random available group
+                    const randomGroupIndex = Math.floor(Math.random() * availableGroups.length);
+                    const targetGroup = availableGroups[randomGroupIndex];
+                    
+                    targetGroup.members.push(person);
+                } else {
+                    unassignedMembers.push(person);
+                }
+            });
+
+            groupedResults = processedGroups;
+            renderResults();
+            exportSectionEl.classList.remove('hidden');
+        }
+
+        function resetResults() {
+            groupedResults = [];
+            unassignedMembers = [];
+            resultsAreaEl.innerHTML = `
+                <div class="col-span-1 md:col-span-2 text-center py-12 text-gray-400 border-2 border-dashed border-gray-300 rounded-lg">
+                    <i class="fas fa-clipboard-list text-4xl mb-3"></i>
+                    <p>เพิ่มรายชื่อ และ สร้างกลุ่ม จากนั้นกดปุ่ม "สุ่มจัดกลุ่ม"</p>
+                </div>
+            `;
+            unassignedAreaEl.classList.add('hidden');
+            exportSectionEl.classList.add('hidden');
+        }
+
+        function renderResults() {
+            resultsAreaEl.innerHTML = '';
+            
+            groupedResults.forEach(group => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow border-t-4 border-indigo-500 overflow-hidden card';
+                
+                let membersHtml = '';
+                if (group.members.length > 0) {
+                    membersHtml = `<ul class="divide-y divide-gray-100">
+                        ${group.members.map((m, idx) => `
+                            <li class="py-2 px-4 text-sm flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs mr-2">${idx + 1}</span>
+                                ${m}
+                            </li>
+                        `).join('')}
+                    </ul>`;
+                } else {
+                    membersHtml = '<div class="p-4 text-center text-gray-400 text-sm">ไม่มีสมาชิก</div>';
+                }
+
+                card.innerHTML = `
+                    <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">${group.name}</h3>
+                        <span class="text-xs font-semibold px-2 py-1 bg-white border rounded text-gray-500">
+                            ${group.members.length} / ${group.limit}
+                        </span>
+                    </div>
+                    ${membersHtml}
+                `;
+                resultsAreaEl.appendChild(card);
+            });
+
+            // Render Unassigned
+            if (unassignedMembers.length > 0) {
+                unassignedAreaEl.classList.remove('hidden');
+                unassignedListEl.innerHTML = unassignedMembers.map(m => `<li>${m}</li>`).join('');
+            } else {
+                unassignedAreaEl.classList.add('hidden');
+            }
+        }
+
+        // --- Export Functions ---
+        function exportToExcel() {
+            // Flatten data for Excel: [Group Name, Member Name]
+            const rows = [];
+            
+            // Header
+            rows.push(["Group Name", "Member Name"]);
+            
+            groupedResults.forEach(group => {
+                group.members.forEach(member => {
+                    rows.push([group.name, member]);
+                });
+            });
+
+            // Add unassigned
+            if (unassignedMembers.length > 0) {
+                unassignedMembers.forEach(member => {
+                    rows.push(["Unassigned", member]);
+                });
+            }
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            
+            XLSX.utils.book_append_sheet(wb, ws, "Group Results");
+            XLSX.writeFile(wb, "groups_result.xlsx");
+        }
+
+    </script>
+</body>
+</html>
