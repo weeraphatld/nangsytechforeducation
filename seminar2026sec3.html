@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โครงการสัมมนา วิเคราะห์สถานการณ์ปัญหาการจัดการศึกษา</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Kanit -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .bg-gradient-main {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+        }
+
+        .image-container img {
+            transition: transform 0.5s ease;
+        }
+
+        .image-container:hover img {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800">
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-main text-white py-16 px-4 text-center shadow-lg relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+            </svg>
+        </div>
+        <div class="max-w-4xl mx-auto relative z-10 animate-fade-in-up">
+            <div
+                class="inline-block bg-blue-500/30 px-4 py-1 rounded-full text-sm font-medium mb-4 border border-blue-400/50">
+                Seminar 2026
+            </div>
+            <h1 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+                โครงการสัมมนา วิเคราะห์สถานการณ์ปัญหา<br class="hidden md:block">ที่เกี่ยวข้องกับการจัดการศึกษา
+            </h1>
+            <div class="flex flex-col md:flex-row justify-center gap-6 text-lg opacity-90 mb-8">
+                <div class="flex items-center justify-center gap-2">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>วันอังคาร ที่ 17 กุมภาพันธ์ 2569</span>
+                </div>
+                <div class="flex items-center justify-center gap-2">
+                    <i class="far fa-clock"></i>
+                    <span>เวลา 10.00 - 12.00 น.</span>
+                </div>
+                <div class="flex items-center justify-center gap-2">
+                    <i class="fas fa-video"></i>
+                    <span>Google Meet</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12">
+
+        <!-- Main Room Section -->
+        <section class="mb-16">
+            <div class="max-w-2xl mx-auto text-center">
+                <div class="glass-card rounded-3xl p-8 hover-lift border-t-4 border-blue-600 shadow-xl">
+                    <div
+                        class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-4">ห้องรวมใหญ่</h2>
+                    <p class="text-slate-600 mb-8">
+                        เข้าสู่ห้องประชุมหลักเพื่อรับฟังการบรรยายร่วมกันและปฐมนิเทศก่อนแยกย้ายเข้าห้องย่อย</p>
+                    <a href="https://meet.google.com/sqs-edzu-vte" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full transition-all active:scale-95 shadow-lg shadow-blue-200">
+                        เข้าร่วมห้องรวมใหญ่ <i class="fas fa-external-link-alt text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Breakout Rooms Section -->
+        <section class="mb-16">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-1 w-12 bg-blue-600 rounded-full"></div>
+                <h3 class="text-2xl font-bold">ห้องย่อยวิเคราะห์ปัญหา</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Room 1 -->
+                <div class="glass-card rounded-2xl overflow-hidden hover-lift shadow-md">
+                    <div class="image-container">
+                        <img src="https://lh3.googleusercontent.com/d/13sjNhlFecCCZ-7apep6Qu9khs26DGsaK"
+                            alt="ห้องย่อย 1" class="w-full h-full object-cover">
+                        <div
+                            class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold shadow-lg">
+                            ห้องย่อยที่ 1</div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-4 text-slate-800 h-14 overflow-hidden">ผู้เรียนขาดความมั่นใจ
+                            ไม่กล้าแสดงออก</h4>
+                        <div class="flex items-center justify-between mt-4">
+                            <a href="#"
+                                class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                                <i class="fas fa-folder"></i> Resources
+                            </a>
+                            <a href="https://xxxxxx" target="_blank" rel="noopener noreferrer"
+                                class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium py-2 px-5 rounded-lg transition-colors flex items-center gap-2">
+                                เข้าร่วมประชุม <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room 2 -->
+                <div class="glass-card rounded-2xl overflow-hidden hover-lift shadow-md">
+                    <div class="image-container">
+                        <img src="https://lh3.googleusercontent.com/d/19YCYTR1sg1uu3-3taM-oAwPXZM89gYnD"
+                            alt="ห้องย่อย 2" class="w-full h-full object-cover">
+                        <div
+                            class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold shadow-lg">
+                            ห้องย่อยที่ 2</div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-4 text-slate-800 h-14 overflow-hidden">
+                            การเรียนรู้ที่ไม่เชื่อมโยงกับชีวิตประจำวัน</h4>
+                        <div class="flex items-center justify-between mt-4">
+                            <a href="#"
+                                class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                                <i class="fas fa-folder"></i> Resources
+                            </a>
+                            <a href="https://meet.google.com/syg-rdtq-uox" target="_blank" rel="noopener noreferrer"
+                                class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium py-2 px-5 rounded-lg transition-colors flex items-center gap-2">
+                                เข้าร่วมประชุม <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room 3 -->
+                <div class="glass-card rounded-2xl overflow-hidden hover-lift shadow-md">
+                    <div class="image-container">
+                        <img src="https://lh3.googleusercontent.com/d/1LfPOi4Q6clf8SDEXBWcehLMl2oCDTbY7"
+                            alt="ห้องย่อย 3" class="w-full h-full object-cover">
+                        <div
+                            class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold shadow-lg">
+                            ห้องย่อยที่ 3</div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-4 text-slate-800 h-14 overflow-hidden">
+                            ปฏิบัติตนในห้องเรียนไม่เหมาะสม ไร้มารยาท เสียงดัง</h4>
+                        <div class="flex items-center justify-between mt-4">
+                            <a href="#"
+                                class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                                <i class="fas fa-folder"></i> Resources
+                            </a>
+                            <a href="https://meet.google.com/uob-pjso-sww" target="_blank" rel="noopener noreferrer"
+                                class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium py-2 px-5 rounded-lg transition-colors flex items-center gap-2">
+                                เข้าร่วมประชุม <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room 4 -->
+                <div class="glass-card rounded-2xl overflow-hidden hover-lift shadow-md">
+                    <div class="image-container">
+                        <img src="https://lh3.googleusercontent.com/d/1L66_2Nqd5pA4R7OdrxjYz8zKf5fufo6s"
+                            alt="ห้องย่อย 4" class="w-full h-full object-cover">
+                        <div
+                            class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold shadow-lg">
+                            ห้องย่อยที่ 4</div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="text-xl font-bold mb-4 text-slate-800 h-14 overflow-hidden">
+                            ผู้เรียนมีการใช้โทรศัพท์มือถือระหว่างการเรียนการสอน</h4>
+                        <div class="flex items-center justify-between mt-4">
+                            <a href="#"
+                                class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                                <i class="fas fa-folder"></i> Resources
+                            </a>
+                            <a href="https://meet.google.com/xpb-tsua-xyw" target="_blank" rel="noopener noreferrer"
+                                class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium py-2 px-5 rounded-lg transition-colors flex items-center gap-2">
+                                เข้าร่วมประชุม <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Evaluation Section -->
+        <section class="text-center py-10">
+            <div class="bg-slate-100 rounded-3xl p-8 md:p-12 border border-slate-200">
+                <h3 class="text-2xl font-bold mb-4 italic text-slate-700">ขอบคุณสำหรับการร่วมสัมมนา</h3>
+                <p class="text-slate-500 mb-8 max-w-lg mx-auto">ความคิดเห็นของคุณมีค่าสำหรับเรา
+                    โปรดสละเวลาสักครู่เพื่อประเมินความพึงพอใจในการเข้าร่วมโครงการ</p>
+                <a href="https://xxxx" target="_blank" rel="noopener noreferrer"
+                    class="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-lg shadow-emerald-100 transform hover:scale-105 active:scale-95">
+                    <i class="fas fa-clipboard-check text-xl"></i> ทำแบบประเมินความพึงพอใจ
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-10 px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="mb-4">© 2026 20MEd Sec3. All rights reserved.</p>
+            <div class="flex justify-center gap-6 text-sm">
+                <span>Education Research</span>
+                <span>•</span>
+                <span>Educational Policy</span>
+                <span>•</span>
+                <span>Problem Analysis</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to add fade-in effect on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+            observer.observe(section);
+        });
+    </script>
+</body>
+
+</html>
